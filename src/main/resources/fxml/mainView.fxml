@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="anchorPane" prefHeight="398.0" prefWidth="596.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.reshetnikov.UI.OverviewController">
+   <children>
+      <ComboBox fx:id="quantifierComboBox" layoutX="221.0" layoutY="125.0" prefWidth="150.0" promptText="Квантор" />
+      <ComboBox fx:id="categoryComboBox" layoutX="44.0" layoutY="309.0" prefWidth="150.0" promptText="Категория" />
+      <Label layoutX="9.0" layoutY="265.0" text="Укажите категории в незначимых зонах" />
+      <Button fx:id="openZoneButton" layoutX="377.0" layoutY="125.0" mnemonicParsing="false" onAction="#openFileZone" text="Открыть файл с зонами" />
+      <Button fx:id="calculateButton" layoutX="382.0" layoutY="187.0" mnemonicParsing="false" onAction="#calculate" text="Рассчитать категорию" />
+      <VBox layoutX="14.0" layoutY="126.0" prefHeight="106.0" prefWidth="221.0">
+         <children>
+            <RadioButton fx:id="radioButton1" mnemonicParsing="false" onAction="#refresh" prefHeight="36.0" prefWidth="260.0" text="Операцию порядкового &#10;агрегирования OWA">
+               <toggleGroup>
+                  <ToggleGroup fx:id="Methods" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="radioButton2" mnemonicParsing="false" onAction="#refresh" prefHeight="46.0" prefWidth="241.0" text="Средняя величина расстояния" toggleGroup="$Methods" />
+         </children>
+      </VBox>
+      <Button fx:id="openPointButton" layoutX="347.0" layoutY="67.0" mnemonicParsing="false" onAction="#openFilePoint" text="Открыть файл с коллекцией точек" />
+      <Label layoutX="42.0" layoutY="46.0" prefHeight="67.0" prefWidth="138.0" text="Выберите способ &#10;для определения &#10;обобщенной оценки &#10;значимой зоны " />
+      <MenuBar prefHeight="25.0" prefWidth="606.0">
+         <menus>
+            <Menu mnemonicParsing="false" text="File">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#openFilePoint" text="Open file with points" />
+                  <MenuItem mnemonicParsing="false" onAction="#openFileZone" text="Open file with zones" />
+                  <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Exit" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Delete" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="About" />
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+   </children>
+</AnchorPane>
