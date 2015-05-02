@@ -1,12 +1,10 @@
 package net.reshetnikov.Logic;
 
-import javafx.scene.control.Alert;
 import net.reshetnikov.UI.OverviewController;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.ListIterator;
 import java.util.Scanner;
 
 
@@ -14,14 +12,13 @@ public class DataProcessing {
     private ArrayList<Point> mainPointCollection = new ArrayList<Point>();
     private ArrayList<Zone> ZPlusZoneCollection = new ArrayList<>();
     private ArrayList<Zone> ZMinusZoneCollection = new ArrayList<>();
-    private ArrayList<Point> tempPointCollection = new ArrayList<Point>();
 
     public void loadZone(File file){
         try {
             Scanner sc = new Scanner(file);
             while (sc.hasNextLine()){
                 Zone zone = new Zone();
-                if (sc.nextLine().equals("Значимая зона")) zone.setSignificant(true);
+                if (sc.next().equals("Значимая")) zone.setSignificant(true);
                 else zone.setSignificant(false);
                 zone.setxMin(sc.nextInt());
                 zone.setxMax(sc.nextInt());
@@ -48,7 +45,6 @@ public class DataProcessing {
                 point.setZAxis(sc.nextInt());
                 point.setCategory(sc.next());
                 point.setRequirementCategory(sc.next());
-                point.setSignificant(sc.nextBoolean());
                 mainPointCollection.add(point);
             }
             sc.close();
@@ -60,95 +56,17 @@ public class DataProcessing {
     }
 
     private void calculateTheArea() {
-        while (!mainPointCollection.isEmpty()) {
-            ArrayList<Point> zone = new ArrayList<Point>();
-            tempPointCollection.add(mainPointCollection.get(0));
-            mainPointCollection.remove(0);
-            System.out.println("Добавлена в темповую коллекцию  " + tempPointCollection.get(0).toString());
-            if (tempPointCollection.get(0).isSignificant()) {
-                while (!tempPointCollection.isEmpty()) {
-                    ListIterator<Point> pointIteratorFromTemp = tempPointCollection.listIterator();
-                    while (pointIteratorFromTemp.hasNext()) {
-                        Point currentPointFromTemp = pointIteratorFromTemp.next();
-                        pointIteratorFromTemp.remove();
-//                        System.out.println("Взяли из темповой   " + currentPointFromTemp.toString());
-                        ListIterator<Point> pointIteratorFromMain = mainPointCollection.listIterator();
-                        while (pointIteratorFromMain.hasNext()) {
-                            Point currentPointFromMain = pointIteratorFromMain.next();
-                            if ((currentPointFromMain.isSignificant()) && (isNearPoint(currentPointFromTemp, currentPointFromMain))) {
-                                pointIteratorFromTemp.add(currentPointFromMain);
-//                                System.out.println("Добавлена в темповую коллекцию  " + currentPointFromMain.toString());
-                                pointIteratorFromMain.remove();
-//                                System.out.println("Удалена из основной коллекции   " + currentPointFromMain.toString());
-                            }
-                        }
-                        zone.add(currentPointFromTemp);
-//                        System.out.println("Добавлена в финальную коллекцию " + currentPointFromTemp.toString());
-//                        System.out.println("коллекция темп пуста = " + tempPointCollection.isEmpty());
-                    }
-                    /*for (Point pointFromTemp : tempPointCollection) {
-                        System.out.println("Взяли из темповой   " + pointFromTemp.toString());
-                        for (Point pointFromMain : mainPointCollection) {
-                            if ((pointFromMain.isSignificant()) && (isNearPoint(pointFromTemp, pointFromMain))) {
-                                tempPointCollection.add(pointFromMain);
-                                System.out.println("Добавлена в темповую коллекцию  " + pointFromMain.toString());
-                                mainPointCollection.remove(pointFromMain);
-                                System.out.println("Удалена из основной коллекции   " + pointFromMain.toString());
-                            }
-                        }
-                        zone.add(pointFromTemp);
-                        System.out.println("Добавлена в финальную коллекцию " + pointFromTemp.toString());
-                        tempPointCollection.remove(pointFromTemp);
-                    }*/
-                }
-                ZPlusZoneCollection.add(zone);
-//                System.out.println("Добавлена значимая зона " + ZPlusZoneCollection.toString());
-            } else {
-                while (!tempPointCollection.isEmpty()) {
-                    ListIterator<Point> pointIteratorFromTemp = tempPointCollection.listIterator();
-                    while (pointIteratorFromTemp.hasNext()) {
-                        Point currentPointFromTemp = pointIteratorFromTemp.next();
-                        pointIteratorFromTemp.remove();
-//                        System.out.println("Взяли из темповой   " + currentPointFromTemp.toString());
-                        ListIterator<Point> pointIteratorFromMain = mainPointCollection.listIterator();
-                        while (pointIteratorFromMain.hasNext()) {
-                            Point currentPointFromMain = pointIteratorFromMain.next();
-                            if (!(currentPointFromMain.isSignificant()) && (isNearPoint(currentPointFromTemp, currentPointFromMain))) {
-                                pointIteratorFromTemp.add(currentPointFromMain);
-//                                System.out.println("Добавлена в темповую коллекцию  " + currentPointFromMain.toString());
-                                pointIteratorFromMain.remove();
-//                                System.out.println("Удалена из основной коллекции   " + currentPointFromMain.toString());
-                            }
-                        }
-                        zone.add(currentPointFromTemp);
-//                        System.out.println("Добавлена в финальную коллекцию " + currentPointFromTemp.toString());
-//                        System.out.println("коллекция темп пуста = " + tempPointCollection.isEmpty());
-                    }
-                /*while (!tempPointCollection.isEmpty()) {
-                    for (Point pointFromTemp : tempPointCollection) {
-                        System.out.println("Взяли из темповой   " + pointFromTemp.toString());
-                        for (Point pointFromMain : mainPointCollection) {
-                            if (!(pointFromMain.isSignificant()) && (isNearPoint(pointFromTemp, pointFromMain))) {
-                                tempPointCollection.add(pointFromMain);
-                                System.out.println("Добавлена в темповую коллекцию  " + pointFromMain.toString());
-                                mainPointCollection.remove(pointFromMain);
-                                System.out.println("Удалена из основной коллекции   " + pointFromMain.toString());
-                            }
-                        }
-                        zone.add(pointFromTemp);
-                        System.out.println("Добавлена в финальную коллекцию " + pointFromTemp.toString());
-                        tempPointCollection.remove(pointFromTemp);
-                    }
-                }*/
-                }
-                ZMinusZoneCollection.add(zone);
-//                System.out.println("Добавлена незначимая зона " + ZMinusZoneCollection.toString());
-            }
+        for (Zone zone:ZPlusZoneCollection){
+            // форич по коллекции мейнпоинт дальше иф инрендж то добавить в зон
+            mainPointCollection.stream().filter(point -> inRange(zone, point)).forEach(point -> zone.getPoints().add(point));        }
+        for (Zone zone:ZMinusZoneCollection){
+            mainPointCollection.stream().filter(point -> inRange(zone,point)).forEach(point -> zone.getPoints().add(point));
         }
     }
-
-    private boolean isNearPoint(Point first, Point second) {
-        return (Math.abs(first.getXAxis() - second.getXAxis()) <= 1 && Math.abs(first.getYAxis() - second.getYAxis()) <= 1 && Math.abs(first.getZAxis() - second.getZAxis()) <= 1);
+    private boolean inRange(Zone zone,Point point){
+        return (point.getXAxis() <= zone.getxMax() && point.getXAxis() >= zone.getxMin()) &&
+                (point.getYAxis() <= zone.getyMax() && point.getYAxis() >= zone.getyMin()) &&
+                (point.getZAxis() <= zone.getzMax() && point.getYAxis() >= zone.getyMin());
     }
 
     private double evaluateMismatch(Point point) {
@@ -214,23 +132,25 @@ public class DataProcessing {
 
     }
 
-    private double approximateMinusArea(ArrayList<Point> zone) {
+    private double approximateMinusArea(Zone zone) {
         int numberOfPointWithSelectedCategory = 0;
 
-        for (Point point : zone ){
+        for (Point point : zone.getPoints() ){
             if (point.getCategory().equals("A") || point.getCategory().equals("B") ) numberOfPointWithSelectedCategory++;
         }
-        return (double)numberOfPointWithSelectedCategory/zone.size();
+        return (double)numberOfPointWithSelectedCategory/zone.getPoints().size();
     }
 
     public void testMethod() {
+        calculateTheArea();
         for (Zone zone:ZPlusZoneCollection){
             System.out.println(zone.toString());
         }
         for (Zone zone:ZMinusZoneCollection){
             System.out.println(zone.toString());
         }
-        //calculateTheArea();
+
+
         /*int i = 0;
         System.out.println("Значимые зоны " + "Количество зон со значимыми точками " + ZPlusZoneCollection.size());
         for (ArrayList<Point> zone : ZPlusZoneCollection) {

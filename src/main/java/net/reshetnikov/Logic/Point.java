@@ -28,14 +28,6 @@ public class Point {
         this.zAxis = zAxis;
     }
 
-    public boolean isSignificant() {
-        return isSignificant;
-    }
-
-    public void setSignificant(boolean isSignificant) {
-        this.isSignificant = isSignificant;
-    }
-
     public String getCategory() {
         return category;
     }
@@ -58,7 +50,6 @@ public class Point {
                 "координатой x = " + xAxis +
                 ", координатой y = " + yAxis +
                 ", координатой z = " + zAxis +
-                ", значимость точки = " + isSignificant +
                 ", категория = " + category +
                 ", требование к категории = " + requirementCategory;
     }
@@ -68,7 +59,7 @@ public class Point {
     private int zAxis;
     private String category;
     private String requirementCategory;
-    private boolean isSignificant;
+
 
 
 }
