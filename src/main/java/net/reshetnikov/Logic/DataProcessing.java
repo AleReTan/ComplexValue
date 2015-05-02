@@ -64,7 +64,7 @@ public class DataProcessing {
             ArrayList<Point> zone = new ArrayList<Point>();
             tempPointCollection.add(mainPointCollection.get(0));
             mainPointCollection.remove(0);
-//            System.out.println("Добавлена в темповую коллекцию  " + tempPointCollection.get(0).toString());
+            System.out.println("Добавлена в темповую коллекцию  " + tempPointCollection.get(0).toString());
             if (tempPointCollection.get(0).isSignificant()) {
                 while (!tempPointCollection.isEmpty()) {
                     ListIterator<Point> pointIteratorFromTemp = tempPointCollection.listIterator();
