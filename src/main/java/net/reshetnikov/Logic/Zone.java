@@ -2,9 +2,7 @@ package net.reshetnikov.Logic;
 
 import java.util.ArrayList;
 
-/**
- * Created by Александр on 02.05.2015.
- */
+
 public class Zone {
     private int xMin;
     private int xMax;
@@ -12,7 +10,7 @@ public class Zone {
     private int yMax;
     private int zMin;
     private int zMax;
-    private ArrayList<Point> points = new ArrayList<Point>();
+    private ArrayList<Point> points = new ArrayList<>();
     private boolean isSignificant;
 
     public int getxMin() {
@@ -67,10 +65,6 @@ public class Zone {
         return points;
     }
 
-    public void setPoints(ArrayList<Point> points) {
-        this.points = points;
-    }
-
     public boolean isSignificant() {
         return isSignificant;
     }
@@ -88,8 +82,8 @@ public class Zone {
                 ", yMax=" + yMax +
                 ", zMin=" + zMin +
                 ", zMax=" + zMax +
-                ", points=" + points +
                 ", isSignificant=" + isSignificant +
+                ", points=" + points +
                 '}';
     }
 }

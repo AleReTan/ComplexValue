@@ -1,9 +1,7 @@
 package net.reshetnikov.UI;
 
         import javafx.fxml.FXML;
-        import javafx.scene.control.Button;
-        import javafx.scene.control.ComboBox;
-        import javafx.scene.control.RadioButton;
+        import javafx.scene.control.*;
         import javafx.scene.layout.AnchorPane;
         import javafx.stage.FileChooser;
         import net.reshetnikov.Logic.DataProcessing;
@@ -28,6 +26,8 @@ public class OverviewController {
     @FXML
     private Button calculateButton;
     @FXML
+    private TextField textField;
+    @FXML
     private ComboBox categoryComboBox;
     @FXML
     private ComboBox quantifierComboBox;
@@ -39,6 +39,9 @@ public class OverviewController {
     private AnchorPane anchorPane;
 
     public DataProcessing dataProcessing = new DataProcessing();
+
+    private boolean flagOpenPoints = false;
+    private boolean flagOpenZones = false;
 
     public void refresh(){
         if (radioButton1.isSelected()) quantifierComboBox.setDisable(false);
@@ -56,8 +59,8 @@ public class OverviewController {
         File file = fileChooser.showOpenDialog(anchorPane.getScene().getWindow());
         if (file != null) {
             dataProcessing.loadPoints(file);
+            flagOpenPoints = true;
         }
-
     }
     public void openFileZone(){
         FileChooser fileChooser = new FileChooser();
@@ -70,6 +73,7 @@ public class OverviewController {
         File file = fileChooser.showOpenDialog(anchorPane.getScene().getWindow());
         if (file != null) {
             dataProcessing.loadZone(file);
+            flagOpenZones = true;
         }
     }
     public void closeApp(){
@@ -77,8 +81,39 @@ public class OverviewController {
     }
 
     public void calculate(){
-
-        dataProcessing.testMethod();
-
+        if (!flagOpenPoints) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error dialog");
+            alert.setHeaderText("Откройте файл с точками");
+            alert.setContentText("Не был открыт файл с набором точек");
+            alert.showAndWait();
+        }
+        if (!flagOpenZones) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error dialog");
+            alert.setHeaderText("Откройте файл с зонами");
+            alert.setContentText("Не был открыт файл с набором зон");
+            alert.showAndWait();
+        }
+        if (!(radioButton1.isSelected()||radioButton2.isSelected())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error dialog");
+            alert.setHeaderText("Необходимо выбрать способ");
+            alert.setContentText("Не был выбран способ определения обобщенной оценки значимой зоны");
+            alert.showAndWait();
+        }
+        if (textField.getText().equals("")) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error dialog");
+            alert.setHeaderText("Необходимо выбрать параметр alpha");
+            alert.setContentText("Не был выбрано значение параметра alpha, оно должно принадлежать от 0 до 1");
+            alert.showAndWait();
+        }
+        if(flagOpenZones && flagOpenPoints && (radioButton1.isSelected()||radioButton2.isSelected()) && !textField.getText().equals("")) {
+            String method = "";
+            if (radioButton1.isSelected()) method = "OWA";
+            if (radioButton2.isSelected()) method = "middle";
+            dataProcessing.calculateMethod(categoryComboBox.getValue().toString(), method, quantifierComboBox.getValue().toString(),textField.getText());
+        }
     }
 }
