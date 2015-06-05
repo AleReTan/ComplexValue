@@ -44,6 +44,14 @@ public class Point {
         this.requirementCategory = requirementCategory;
     }
 
+    public boolean isUsed() {
+        return isUsed;
+    }
+
+    public void setUsed(boolean isUsed) {
+        this.isUsed = isUsed;
+    }
+
     @Override
     public String toString() {
         return "Точка с " +
@@ -59,7 +67,7 @@ public class Point {
     private int zAxis;
     private String category;
     private String requirementCategory;
-
+    private boolean isUsed;
 
 
 }

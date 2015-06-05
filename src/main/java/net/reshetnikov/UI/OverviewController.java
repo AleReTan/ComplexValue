@@ -37,6 +37,10 @@ public class OverviewController {
     private RadioButton radioButton2;
     @FXML
     private AnchorPane anchorPane;
+    @FXML
+    private MenuItem help;
+    @FXML
+    private MenuItem about;
 
     public DataProcessing dataProcessing = new DataProcessing();
 
@@ -62,6 +66,7 @@ public class OverviewController {
             flagOpenPoints = true;
         }
     }
+
     public void openFileZone(){
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
@@ -76,6 +81,7 @@ public class OverviewController {
             flagOpenZones = true;
         }
     }
+
     public void closeApp(){
         Main.getPrimaryStage().close();
     }
@@ -115,5 +121,29 @@ public class OverviewController {
             if (radioButton2.isSelected()) method = "middle";
             dataProcessing.calculateMethod(categoryComboBox.getValue().toString(), method, quantifierComboBox.getValue().toString(),textField.getText());
         }
+    }
+
+    public void showHelp(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Помощь");
+        alert.setHeaderText(null);
+        alert.setContentText("Алгоритм работы с программой.\n" +
+                "1. Откройте файл с набором точек\n" +
+                "2. Откройте файл с набором зон\n" +
+                "3. Выберите способ определения обобщенной оценки значимой зоны\n" +
+                "3.1 Если выбран OWA-оператор, необходимо выбрать квантор\n" +
+                "4. Выберите категории в незначимых зонах\n" +
+                "5. Введите значение параметра alpha для регулирования важности значимой зоны\n" +
+                "6. Нажмите кнопку рассчитать");
+        alert.showAndWait();
+    }
+
+    public void showAbout(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("О программе");
+        alert.setHeaderText(null);
+        alert.setContentText("Программа для получения комплексной оценки помещения.\n" +
+                "Разработал Решетников Александр студент 4 курса факультета ПММ кафедры ВМ и ПИТ в 2015");
+        alert.showAndWait();
     }
 }

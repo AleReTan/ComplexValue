@@ -14,14 +14,14 @@ public class DataProcessing {
     private ArrayList<Zone> ZPlusZoneCollection = new ArrayList<>();
     private ArrayList<Zone> ZMinusZoneCollection = new ArrayList<>();
 
-    public void loadZone(File file){
+    public void loadZone(File file) {
         ZMinusZoneCollection.clear();
         ZMinusZoneCollection.trimToSize();
         ZPlusZoneCollection.clear();
         ZPlusZoneCollection.trimToSize();
         try {
             Scanner sc = new Scanner(file);
-            while (sc.hasNextLine()){
+            while (sc.hasNextLine()) {
                 Zone zone = new Zone();
                 if (sc.next().equals("Значимая")) zone.setSignificant(true);
                 else zone.setSignificant(false);
@@ -31,11 +31,10 @@ public class DataProcessing {
                 zone.setyMax(sc.nextInt());
                 zone.setzMin(sc.nextInt());
                 zone.setzMax(sc.nextInt());
-                if(zone.isSignificant()) ZPlusZoneCollection.add(zone);
+                if (zone.isSignificant()) ZPlusZoneCollection.add(zone);
                 else ZMinusZoneCollection.add(zone);
             }
-        }
-        catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -50,8 +49,8 @@ public class DataProcessing {
                 point.setXAxis(sc.nextInt());
                 point.setYAxis(sc.nextInt());
                 point.setZAxis(sc.nextInt());
-                point.setCategory(sc.next());
-                point.setRequirementCategory(sc.next());
+                point.setCategory(sc.next().toUpperCase());
+                point.setRequirementCategory(sc.next().toUpperCase());
                 mainPointCollection.add(point);
             }
             sc.close();
@@ -63,32 +62,34 @@ public class DataProcessing {
     }
 
     private void calculateTheArea() {
-        for (Zone zone:ZPlusZoneCollection){
-            // форич по коллекции мейнпоинт дальше иф инрендж то добавить в зон
-            mainPointCollection.stream().filter(point -> inRange(zone, point)).forEach(point -> zone.getPoints().add(point));
+        for (Zone zone : ZPlusZoneCollection) {
+            for (Point point : mainPointCollection) {
+                if (inRange(zone, point) && !point.getRequirementCategory().equals("NULL") && !point.isUsed()) {
+                    zone.getPoints().add(point);
+                    point.setUsed(true);
+                }
             }
-        for (Zone zone:ZMinusZoneCollection){
-            mainPointCollection.stream().filter(point -> inRange(zone,point)).forEach(point -> zone.getPoints().add(point));
+        }
+        for (Zone zone : ZMinusZoneCollection) {
+            for (Point point : mainPointCollection) {
+                if (inRange(zone, point) && point.getRequirementCategory().equals("NULL") && !point.isUsed()) {
+                    zone.getPoints().add(point);
+                    point.setUsed(true);
+                }
+            }
         }
     }
-    private boolean inRange(Zone zone,Point point){
+
+    private boolean inRange(Zone zone, Point point) {
         return (point.getXAxis() <= zone.getxMax() && point.getXAxis() >= zone.getxMin()) &&
                 (point.getYAxis() <= zone.getyMax() && point.getYAxis() >= zone.getyMin()) &&
                 (point.getZAxis() <= zone.getzMax() && point.getZAxis() >= zone.getzMin());
     }
 
-    //выставить требование к категории в точках незначимых зон равным null
-    private void setFalse(){
-        for (Zone zone : ZMinusZoneCollection){
-            for (Point point:zone.getPoints()){
-                point.setRequirementCategory("null");
-            }
-        }
-    }
-
     private double evaluateMismatch(Point point) {
         switch (point.getCategory()) {
-            case "A": return 0;
+            case "A":
+                return 0;
 
             case "B":
                 switch (point.getRequirementCategory()) {
@@ -139,85 +140,85 @@ public class DataProcessing {
         return 13.37;
     }
 
-    private double approximatePlusArea(Zone zone,String method,String quantifier) {
-        if (method.equals("OWA")){
+    private double approximatePlusArea(Zone zone, String method, String quantifier) {
+        if (method.equals("OWA")) {
             ArrayList<Double> weight = new ArrayList<>();
             double value = 0;
-            if (quantifier.equals("x"+(char)178)) {
+            if (quantifier.equals("x" + (char) 178)) {
                 for (int i = 1; i <= zone.getPoints().size(); i++) {
-                    weight.add(Math.pow((double)i/zone.getPoints().size(),2) - Math.pow(((double)i-1)/zone.getPoints().size(),2) );
+                    weight.add(Math.pow((double) i / zone.getPoints().size(), 2) - Math.pow(((double) i - 1) / zone.getPoints().size(), 2));
                 }
             }
-            if (quantifier.equals("x"+(char)179)) {
+            if (quantifier.equals("x" + (char) 179)) {
                 for (int i = 1; i <= zone.getPoints().size(); i++) {
-                    weight.add(Math.pow((double)i/zone.getPoints().size(),3) - Math.pow(((double)i-1)/zone.getPoints().size(),3) );
+                    weight.add(Math.pow((double) i / zone.getPoints().size(), 3) - Math.pow(((double) i - 1) / zone.getPoints().size(), 3));
                 }
             }
-            System.out.println("OWA weight "+weight.toString());
-            for (int i = 0; i < zone.getPoints().size();i++){
-                value+=weight.get(i)*evaluateMismatch(zone.getPoints().get(i));
+            for (int i = 0; i < zone.getPoints().size(); i++) {
+                value += weight.get(i) * evaluateMismatch(zone.getPoints().get(i));
             }
             return value;
         }
-        if (method.equals("middle")){
+        if (method.equals("middle")) {
             ArrayList<Double> mismatch = new ArrayList<>();
             double sum = 0;
-            System.out.println(zone.toString());
             for (Point point : zone.getPoints()) {
                 mismatch.add(evaluateMismatch(point));
             }
-            for (double value : mismatch){
-                sum+=value;
+            for (double value : mismatch) {
+                sum += value;
             }
-            return sum/mismatch.size();
+            return sum / mismatch.size();
         }
         return 13.37;
     }
 
-    private double approximateMinusArea(Zone zone,String category) {
+    private double approximateMinusArea(Zone zone, String category) {
         int numberOfPointWithSelectedCategory = 0;
 
-        for (Point point : zone.getPoints() ){
+        for (Point point : zone.getPoints()) {
             switch (category) {
-                case "A":if (point.getCategory().equals("A")) numberOfPointWithSelectedCategory++;
+                case "A":
+                    if (point.getCategory().equals("A")) numberOfPointWithSelectedCategory++;
                     break;
-                case "A,B":if (point.getCategory().equals("A") ||
-                               point.getCategory().equals("B")) numberOfPointWithSelectedCategory++;
+                case "A,B":
+                    if (point.getCategory().equals("A") ||
+                            point.getCategory().equals("B")) numberOfPointWithSelectedCategory++;
                     break;
-                case "A,B,C":if (point.getCategory().equals("A") ||
-                                 point.getCategory().equals("B") ||
-                                 point.getCategory().equals("C")) numberOfPointWithSelectedCategory++;
+                case "A,B,C":
+                    if (point.getCategory().equals("A") ||
+                            point.getCategory().equals("B") ||
+                            point.getCategory().equals("C")) numberOfPointWithSelectedCategory++;
                     break;
-                default:break;
+                default:
+                    break;
             }
         }
-        return (double)numberOfPointWithSelectedCategory/zone.getPoints().size();
+        return (double) numberOfPointWithSelectedCategory / zone.getPoints().size();
     }
 
-    public void calculateMethod(String forMinus,String forPlus,String forPlusQuantifier,String alpha) {
+    public void calculateMethod(String forMinus, String forPlus, String forPlusQuantifier, String alpha) {
         ArrayList<Double> valueMinusArea = new ArrayList();
         ArrayList<Double> valuePlusArea = new ArrayList();
         calculateTheArea();
-        //setFalse(); цепляет значения плюсовых точек, меняет требуемые категории на нулл
-        for (Zone zone:ZMinusZoneCollection) {
+        for (Zone zone : ZMinusZoneCollection) {
             valueMinusArea.add(approximateMinusArea(zone, forMinus));
-
         }
-        for (Zone zone:ZPlusZoneCollection){
+        for (Zone zone : ZPlusZoneCollection) {
             valuePlusArea.add(approximatePlusArea(zone, forPlus, forPlusQuantifier));
         }
-        double weightPlus = 1.0/ZPlusZoneCollection.size();
-        double weightMinus = 1.0/ZMinusZoneCollection.size();
-        double zPlusValue=0;
-        double zMinusValue=0;
+        double weightPlus = 1.0 / ZPlusZoneCollection.size();
+        double weightMinus = 1.0 / ZMinusZoneCollection.size();
+        double zPlusValue = 0;
+        double zMinusValue = 0;
 
-        for (double value:valueMinusArea){
-            zMinusValue+=weightMinus*value;
+        for (double value : valueMinusArea) {
+            zMinusValue += weightMinus * value;
         }
-        for (double value:valuePlusArea){
-            zPlusValue+=weightPlus*value;
+        for (double value : valuePlusArea) {
+            zPlusValue += weightPlus * value;
         }
-        double complexValue = Double.parseDouble(alpha)*zPlusValue+(1-Double.parseDouble(alpha))*zMinusValue;
+        double complexValue = Double.parseDouble(alpha) * zPlusValue + (1 - Double.parseDouble(alpha)) * zMinusValue;
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Итоговая оценка");
@@ -227,12 +228,14 @@ public class DataProcessing {
 
         System.out.println(valueMinusArea.toString());
         System.out.println(valuePlusArea.toString());
-
-        for (Zone zone:ZPlusZoneCollection){
+        for (Point point : mainPointCollection) {
+            point.setUsed(false);
+        }
+        for (Zone zone : ZPlusZoneCollection) {
             zone.getPoints().clear();
             zone.getPoints().trimToSize();
         }
-        for (Zone zone:ZMinusZoneCollection){
+        for (Zone zone : ZMinusZoneCollection) {
             zone.getPoints().clear();
             zone.getPoints().trimToSize();
         }

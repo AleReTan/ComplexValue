@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.input.*?>
 <?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
@@ -34,14 +35,13 @@
                   <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Exit" />
                </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Edit">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="Delete" />
-               </items>
-            </Menu>
             <Menu mnemonicParsing="false" text="Help">
                <items>
-                  <MenuItem mnemonicParsing="false" text="About" />
+                  <MenuItem fx:id="help" mnemonicParsing="false" onAction="#showHelp" text="Help">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <MenuItem fx:id="about" mnemonicParsing="false" onAction="#showAbout" text="About" />
                </items>
             </Menu>
          </menus>
