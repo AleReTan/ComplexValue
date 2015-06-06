@@ -60,7 +60,7 @@ public class DataProcessing {
 
 
     }
-
+    /*Для всех считанных точек производит разбиение по зонам указанным во входном файле*/
     private void calculateTheArea() {
         for (Zone zone : ZPlusZoneCollection) {
             for (Point point : mainPointCollection) {
